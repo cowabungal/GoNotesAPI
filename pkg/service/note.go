@@ -18,10 +18,18 @@ func (s *NoteService) GetAll(userId int) ([]*GoNotes.Note, error) {
 	return notes, err
 }
 
-func (s *NoteService) Add(id int, note *GoNotes.Note) (int, error) {
-	return s.repo.Note.Add(id, note)
+func (s *NoteService) Add(userId int, note *GoNotes.Note) (int, error) {
+	return s.repo.Note.Add(userId, note)
 }
 
 func (s *NoteService) Delete(id, userId int) error {
-	return s.repo.Delete(id, userId)
+	return s.repo.Note.Delete(id, userId)
+}
+
+func (s *NoteService) Update(userId int, note *GoNotes.Note) (int, error) {
+	if err := note.Validate(); err != nil {
+		return 0, err
+	}
+
+	return s.repo.Note.Update(userId, note)
 }

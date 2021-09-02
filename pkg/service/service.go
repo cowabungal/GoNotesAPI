@@ -29,4 +29,5 @@ type Note interface {
 	GetAll(userId int) ([]*GoNotes.Note, error)
 	Add(id int, note *GoNotes.Note) (int, error)
 	Delete(id, userId int) error
+	Update(userId int, note *GoNotes.Note) (int, error)
 }
