@@ -26,7 +26,6 @@ func (r *AuthRepository) CreateUser(user GoNotes.User) error {
 }
 
 func (r *AuthRepository) CreateSession(user *GoNotes.User) (*GoNotes.User, error) {
-	println(user.Password)
 	user, err := r.CheckUser(user.Username, user.Password)
 
 	return user, err

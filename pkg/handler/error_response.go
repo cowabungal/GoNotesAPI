@@ -7,7 +7,7 @@ import (
 )
 
 type errorResponse struct {
-	message string `json:"message"`
+	Message string `json:"message"`
 }
 
 func (h *Handler) notFound(c *gin.Context) {
