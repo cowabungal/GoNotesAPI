@@ -16,7 +16,7 @@ func NewService(repo *repository.Repository) *Service {
 }
 
 type Authorization interface {
-	CreateUser(user *GoNotes.User) error
+	CreateUser(user GoNotes.User) error
 	CreateSession(user *GoNotes.User) (*GoNotes.User, error)
 	CheckSession(id int) error
 }

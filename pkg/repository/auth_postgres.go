@@ -14,7 +14,7 @@ func NewAuthRepository(db *sqlx.DB) *AuthRepository {
 	return &AuthRepository{db: db}
 }
 
-func (r *AuthRepository) CreateUser(user *GoNotes.User) error {
+func (r *AuthRepository) CreateUser(user GoNotes.User) error {
 	query := fmt.Sprintf("INSERT INTO %s (username, password) values ($1, $2) RETURNING id", usersTable)
 
 	// набор аргументов подставляется в плейсхолдеры в виде доллара, возвращает объект роу, который хранит инфу о возвращаемой строке из базы
@@ -26,6 +26,7 @@ func (r *AuthRepository) CreateUser(user *GoNotes.User) error {
 }
 
 func (r *AuthRepository) CreateSession(user *GoNotes.User) (*GoNotes.User, error) {
+	println(user.Password)
 	user, err := r.CheckUser(user.Username, user.Password)
 
 	return user, err
