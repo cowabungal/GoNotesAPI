@@ -5,12 +5,15 @@ import (
 	"GoNotes/pkg/handler"
 	"GoNotes/pkg/repository"
 	"GoNotes/pkg/service"
+	"context"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -45,8 +48,26 @@ func main() {
 	handler := handler.NewHandler(service, session)
 
 	srv := new(GoNotes.Server)
-	if err := srv.Run(viper.GetString("port"), handler.InitRoutes()); err != nil {
-		logrus.Fatalf("error occured while running http server: %s", err.Error())
+	go func() {
+		if err := srv.Run(viper.GetString("port"), handler.InitRoutes()); err != nil {
+			logrus.Fatalf("error: main: occured while running http server: %s", err.Error())
+		}
+	}()
+
+	logrus.Print("GoNotesAPI started")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<- quit
+
+	logrus.Print("GoNotesAPI shutting down")
+
+	if err = srv.Shutdown(context.Background()); err != nil {
+		logrus.Error("error: main: occured on server shutting down: %s", err.Error())
+	}
+
+	if err = db.Close(); err != nil {
+		logrus.Error("error: main: occured on server db connection closed: %s", err.Error())
 	}
 }
 
