@@ -9,6 +9,6 @@ CREATE TABLE notes
 (
     id          serial                                      not null unique,
     title       varchar(255)                                not null,
-    description varchar(255)                                not null,
+    description varchar(25555)                                not null,
     user_id     int references users (id) on delete cascade not null
 );

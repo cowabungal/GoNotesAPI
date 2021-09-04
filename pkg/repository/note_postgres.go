@@ -37,9 +37,10 @@ func (r *NoteRepository) Add(userId int, note *GoNotes.Note) (int, error) {
 }
 
 func (r *NoteRepository) Delete(id, userId int) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 and user_id=$2", notesTable)
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 and user_id=$2 RETURNING id", notesTable)
 
-	_, err := r.db.Exec(query, id, userId)
+	row := r.db.QueryRow(query, id, userId)
+	err := row.Scan()
 
 	return err
 }

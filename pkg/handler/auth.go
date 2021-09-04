@@ -50,7 +50,7 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "user was successfully registered")
+	c.JSON(http.StatusOK, response{"user was successfully registered"})
 }
 
 // signIn производит авторизацию пользователя
@@ -71,7 +71,7 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "user was successfully login")
+	c.JSON(http.StatusOK, response{"user was successfully login"})
 }
 
 func passwordValidate(password string) error {

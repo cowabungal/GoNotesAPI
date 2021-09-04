@@ -14,7 +14,7 @@ func (h *Handler) username(c *gin.Context) {
 }
 
 func (h *Handler) api(c *gin.Context) {
-	c.JSON(http.StatusOK, "all good, you are authorized")
+	c.JSON(http.StatusOK, response{"all good, you are authorized"})
 }
 
 // getUserInfo получает инфу о пользователе по id

@@ -76,5 +76,5 @@ func (h *Handler) clearSession(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "user was successfully logout")
+	c.JSON(http.StatusOK, response{"user was successfully logout"})
 }
