@@ -22,6 +22,13 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
+	err = nicknameValidate(input.Username)
+	if err != nil {
+		logrus.Error("error: signUp: nicknameValidate: ", err.Error())
+		newErrorResponse(http.StatusBadRequest, c, err.Error())
+		return
+	}
+
 	err = passwordValidate(input.Password)
 	if err != nil {
 		logrus.Error("error: signUp: passwordValidate: ", err.Error())
@@ -32,7 +39,7 @@ func (h *Handler) signUp(c *gin.Context) {
 	err = h.services.Authorization.CreateUser(input)
 	if err != nil {
 		logrus.Error("error: signUp: CreateUser: " + err.Error())
-		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
+		newErrorResponse(http.StatusBadRequest, c, "username is already used")
 		return
 	}
 
@@ -100,4 +107,32 @@ func passwordValidate(password string) error {
 		}
 
 		return nil
+}
+
+func nicknameValidate(nickname string) error {
+	var count int
+
+	for _, c := range nickname {
+		switch {
+		case unicode.IsNumber(c):
+		case unicode.IsUpper(c):
+		case isLatinLetter(c):
+			count++
+		default:
+			return errors.New("nickname must contains only latin symbols and numbers")
+		}
+	}
+
+	if count < 1 {
+		return errors.New("nickname must contains at least 1 latin letter")
+	}
+
+	return nil
+}
+
+func isLatinLetter(r rune) bool {
+	if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') {
+		return false
+	}
+	return true
 }
