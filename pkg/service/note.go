@@ -1,7 +1,7 @@
 package service
 
 import (
-	GoNotes "GoNotes"
+	"GoNotes"
 	"GoNotes/pkg/repository"
 )
 

@@ -3,6 +3,7 @@ package handler
 import (
 	"GoNotes"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -20,12 +21,14 @@ func (h *Handler) api(c *gin.Context) {
 func (h *Handler) getUserInfo(c *gin.Context) *GoNotes.UserInfo {
 	userId, err := h.getUserId(c)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error: dashboard: Can't get cookie:", c, err.Error())
+		logrus.Error("error: getUserInfo: can't get cookie: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 		return nil
 	}
 	userInfo, err := h.services.User.GetUserInfo(userId)
 	if err != nil {
-		newErrorResponse(http.StatusUnauthorized, "error: getUserInfo: Can't find userId", c, err.Error())
+		logrus.Error("error: getUserInfo: can't find userId: " + err.Error())
+		newErrorResponse(http.StatusUnauthorized, c, "you are unauthorized")
 		return nil
 	}
 

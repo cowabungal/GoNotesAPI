@@ -4,6 +4,7 @@ import (
 	"GoNotes"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"unicode"
 )
@@ -16,29 +17,33 @@ func (h *Handler) signUp(c *gin.Context) {
 
 	err := c.BindJSON(&input)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error get signing-up data", c, err.Error())
+		logrus.Error("error get signing-up data: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 		return
 	}
 
 	err = passwordValidate(input.Password)
 	if err != nil {
-		newErrorResponse(http.StatusBadRequest, "error create user:", c, err.Error())
+		logrus.Error("error: signUp: passwordValidate: ", err.Error())
+		newErrorResponse(http.StatusBadRequest, c, err.Error())
 		return
 	}
 
 	err = h.services.Authorization.CreateUser(input)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error create user:", c, err.Error())
+		logrus.Error("error: signUp: CreateUser: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 		return
 	}
 
 	err = h.createSession(&input, c)
 	if err != nil {
-		newErrorResponse(http.StatusUnauthorized, "error create session:", c, err.Error())
+		logrus.Error("error: signUp: createSession: " + err.Error())
+		newErrorResponse(http.StatusUnauthorized, c, "something went wrong")
 		return
 	}
 
-	c.JSON(http.StatusOK, "message: user was successfully registered")
+	c.JSON(http.StatusOK, "user was successfully registered")
 }
 
 // signIn производит авторизацию пользователя
@@ -47,17 +52,19 @@ func (h *Handler) signIn(c *gin.Context) {
 
 	err := c.BindJSON(&input)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error get signing-in data", c, err.Error())
+		logrus.Error("error: signIn: get signing-in data: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 		return
 	}
 
 	err = h.createSession(&input, c)
 	if err != nil {
-		newErrorResponse(http.StatusUnauthorized, "error signing-in:", c, err.Error())
+		logrus.Error("error: signIn: createSession: " + err.Error())
+		newErrorResponse(http.StatusUnauthorized, c, "username or password is not correct")
 		return
 	}
 
-	c.JSON(http.StatusOK, "message: user was successfully login")
+	c.JSON(http.StatusOK, "user was successfully login")
 }
 
 func passwordValidate(password string) error {

@@ -1,22 +1,25 @@
 package handler
 
 import (
-	GoNotes "GoNotes"
+	"GoNotes"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
 func (h *Handler) getNotes(c *gin.Context) {
 	userId, err := h.getUserId(c)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error: getNotes: Can't get cookie:", c, err.Error())
+		logrus.Error("error: getNotes: can't get cookie: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 	}
 
 	var notes []*GoNotes.Note
 
 	notes, err = h.services.Note.GetAll(userId)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error: getNotes: Can't find notes:", c, err.Error())
+		logrus.Error("error: getNotes: can't find notes: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 	}
 
 	c.JSON(http.StatusOK, notes)
@@ -25,20 +28,23 @@ func (h *Handler) getNotes(c *gin.Context) {
 func (h *Handler) addNotes(c *gin.Context) {
 	userId, err := h.getUserId(c)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error: addNotes: Can't get cookie: ", c, err.Error())
+		logrus.Error("error: addNotes: can't get cookie: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 	}
 
 	var note GoNotes.Note
 
 	err = c.BindJSON(&note)
 	if err != nil {
-		newErrorResponse(http.StatusBadRequest, "error: addNotes: Can't get note data: ", c, err.Error())
+		logrus.Error("error: addNotes: can't get note data: " + err.Error())
+		newErrorResponse(http.StatusBadRequest, c, "error reading note data")
 		return
 	}
 
 	noteId, err := h.services.Note.Add(userId, &note)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error: addNotes: Can't add notes: ", c, err.Error())
+		logrus.Error("error: addNotes: can't add notes : " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 	}
 
 	c.JSON(http.StatusOK, noteId)
@@ -47,20 +53,23 @@ func (h *Handler) addNotes(c *gin.Context) {
 func (h *Handler) updateNotes(c *gin.Context) {
 	userId, err := h.getUserId(c)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error: updateNotes: Can't get cookie: ", c, err.Error())
+		logrus.Error("error: updateNotes: can't get cookie: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 	}
 
 	var note GoNotes.Note
 
 	err = c.BindJSON(&note)
 	if err != nil {
-		newErrorResponse(http.StatusBadRequest, "error: updateNotes: Сan't get note data: ", c, err.Error())
+		logrus.Error("error: updateNotes: can't get note data: " + err.Error())
+		newErrorResponse(http.StatusBadRequest, c, "error reading note data")
 		return
 	}
 
 	noteId, err := h.services.Note.Update(userId, &note)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error: updateNotes: Can't update notes: ", c, err.Error())
+		logrus.Error("error: updateNotes: can't update notes: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 		return
 	}
 
@@ -70,20 +79,23 @@ func (h *Handler) updateNotes(c *gin.Context) {
 func (h *Handler) deleteNotes(c *gin.Context) {
 	userId, err := h.getUserId(c)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error: deleteNotes: Can't get cookie: ", c, err.Error())
+		logrus.Error("error: deleteNotes: can't get cookie: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 	}
 
 	var note GoNotes.Note
 
 	err = c.BindJSON(&note)
 	if err != nil {
-		newErrorResponse(http.StatusBadRequest, "error: deleteNotes: Сan't get note data: ", c, err.Error())
+		logrus.Error("error: deleteNotes: can't get note data: " + err.Error())
+		newErrorResponse(http.StatusBadRequest, c, "error reading note data")
 		return
 	}
 
 	err = h.services.Note.Delete(note.Id, userId)
 	if err != nil {
-		newErrorResponse(http.StatusInternalServerError, "error: deleteNotes: Can't add notes: ", c, err.Error())
+		logrus.Error("error: deleteNotes: can't delete notes: " + err.Error())
+		newErrorResponse(http.StatusInternalServerError, c, "something went wrong")
 	}
 
 	c.JSON(http.StatusOK, "message: note was successfully deleted")

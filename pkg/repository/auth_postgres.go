@@ -1,7 +1,7 @@
 package repository
 
 import (
-	GoNotes "GoNotes"
+	"GoNotes"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 )
